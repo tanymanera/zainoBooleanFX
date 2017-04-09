@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.111" fx:controller="it.polito.tdp.zaino.ZainoController">
+   <top>
+      <Label text="Risoluzione problema dello zaino" BorderPane.alignment="CENTER" />
+   </top>
+   <center>
+      <VBox spacing="5.0" BorderPane.alignment="CENTER">
+         <children>
+            <HBox spacing="5.0">
+               <children>
+                  <Label text="Problema" />
+                  <ComboBox fx:id="boxProblema" />
+                  <Button mnemonicParsing="false" onAction="#handleCarica" text="Carica" />
+               </children>
+            </HBox>
+            <TextArea fx:id="txtProblema" />
+            <Button mnemonicParsing="false" onAction="#handleRisolvi" text="Risolvi" />
+            <TextArea fx:id="txtSoluzione" />
+         </children>
+         <BorderPane.margin>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </BorderPane.margin>
+      </VBox>
+   </center>
+</BorderPane>
