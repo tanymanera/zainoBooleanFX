@@ -1,7 +1,10 @@
 package it.polito.tdp.zaino.model;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+
+import it.polito.tdp.zaino.model.Pezzo;
 
 public class Solver {
 
@@ -19,65 +22,79 @@ public class Solver {
 
 
 	/**
-	 * Calcola il costo di una soluzione parziale
+	 * calcola il costo/valore del contenuto corrente dello zaino
 	 * 
-	 * @param parziale
-	 * @return
+	 * @param parziale contenuto attuale dello zaino
+	 * @return costo/valore del contenuto
 	 */
-	private int costo(Set<Pezzo> parziale) {
-		int r = 0;
-		for (Pezzo p : parziale) {
-			r += p.getCosto();
+	private int costo(boolean[] parziale) {
+		int result = 0;
+		for (int i = 0; i < zaino.getPezzi().size(); i++) {
+			if (parziale[i]) {
+				Pezzo p = zaino.getPezzi().get(i);
+				result += p.getCosto();
+			}
 		}
-		return r;
+		return result;
+	}
+	
+	private int peso(boolean[] parziale) {
+		int result = 0;
+		for (int i = 0; i < zaino.getPezzi().size(); i++) {
+			if (parziale[i]) {
+				Pezzo p = zaino.getPezzi().get(i);
+				result += p.getPeso();
+			}
+		}
+		return result;
 	}
 
-	private int peso(Set<Pezzo> parziale) {
-		int r = 0;
-		for (Pezzo p : parziale) {
-			r += p.getPeso();
-		}
-		return r;
-	}
-
-	private void scegli(Set<Pezzo> parziale, int livello, Set<Pezzo> best) {
+	private void scegli(boolean[] parziale, int livello, boolean[] best) {
+		// E -- sequenza di istruzioni che vengone eseguite sempre
+		// da usare solo in casi rari, stampe di prova
 		
 		numCalls++ ;
 
+		/**
+		 * //A if(condizione di terminazione){ doSomething(); return;
+		 * 
+		 * for()/while() { //B genera nuova soluzione parziale
+		 * 
+		 * if(filtro){//C scegliPezzo(..., level+1, ...); }
+		 * 
+		 * // D backtraking; }
+		 */
+
 		if (costo(parziale) > costo(best)) {
-			// WOW!!! trovato una soluzione migliore
-			// Devo SALVARLA in 'best'
-			
-			best.clear();
-			best.addAll(parziale) ;
-			
-			//System.out.println(parziale);
+			System.arraycopy(parziale, 0, best, 0, parziale.length);
 		}
 
-		for (Pezzo p : zaino.getPezzi()) {
-			if (!parziale.contains(p)) {
-				// 'p' non c'è  ancora, provo a metterlo
-				// se non supera la capacità
-				if (peso(parziale) + p.getPeso() <= zaino.getCapienza()) {
-					// prova a mettere 'p' nello zaino
-					parziale.add(p);
-					// e delegare la ricerca al livello successivo
-					scegli(parziale, livello + 1, best);
-					// poi rimetti le cose a posto (togli 'p')
-					parziale.remove(p);
-				}
+		while (livello < zaino.getPezzi().size()) {
+			parziale[livello] = true;
+			if (peso(parziale) <= zaino.getCapienza()) {
+
+				scegli(parziale, livello + 1, best);
 			}
+			parziale[livello] = false;
+			livello++;
 		}
-
 	}
 
 	public Set<Pezzo> risolvi() {
-		numCalls = 0 ; 
-				
-		Set<Pezzo> parziale = new HashSet<Pezzo>();
-		Set<Pezzo> best = new HashSet<Pezzo>();
+		numCalls = 0;
+		
+		boolean[] parziale = new boolean[zaino.getPezzi().size()];
+		Arrays.fill(parziale, Boolean.FALSE);
+		boolean[] best = new boolean[zaino.getPezzi().size()];
+		Arrays.fill(best, Boolean.FALSE);
 		scegli(parziale, 0, best);
-		return best;
+		Set<Pezzo> result = new HashSet<>();
+		for(int i=0; i < best.length; i++) {
+			if(best[i]) {
+				result.add(zaino.getPezzi().get(i));
+			}
+		}
+		return result;
 	}
 	
 	public int getNumCalls() {
